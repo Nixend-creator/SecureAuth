@@ -1,0 +1,24 @@
+# Build
+build/
+.gradle/
+out/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+*.class
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Plugin data (for local dev)
+run/
+server/
+
+# Sensitive
+*.mmdb
+
+# Gradle wrapper jar — must be committed, do NOT exclude
+!gradle/wrapper/gradle-wrapper.jar

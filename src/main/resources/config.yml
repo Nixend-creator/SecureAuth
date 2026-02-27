@@ -1,0 +1,123 @@
+# SecureAuth Configuration
+# https://github.com/n1xend/SecureAuth/wiki/Configuration
+config-version: 3
+
+# Plugin language: en, ru
+language: ru
+
+database:
+  # sqlite or mysql
+  type: sqlite
+  mysql:
+    host: localhost
+    port: 3306
+    database: secureauth
+    username: root
+    password: ""
+    pool-size: 10
+    connection-timeout: 30000
+    idle-timeout: 600000
+    max-lifetime: 1800000
+
+security:
+  # Argon2id parameters (higher = more secure but slower)
+  argon2:
+    memory: 65536    # 64 MB
+    iterations: 3
+    parallelism: 4
+  # Bruteforce protection
+  max-login-attempts: 5
+  ban-duration-minutes: 30
+  # Session
+  session-timeout-minutes: 30
+  session-ip-binding: true
+  # Password policy
+  password-min-length: 6
+  password-max-length: 64
+
+antibot:
+  enabled: true
+  max-connections-per-second: 10
+  max-pending-logins: 50
+  # Auto-block IPs with too many failed attempts
+  ip-block-threshold: 10
+  ip-block-duration-minutes: 60
+
+two-factor:
+  enabled: true
+  # Require 2FA for players with specific permissions
+  require-for-permission: ""
+  backup-codes-count: 8
+  issuer: "SecureAuth"
+
+email:
+  enabled: false
+  smtp:
+    host: smtp.gmail.com
+    port: 587
+    username: ""
+    password: ""
+    from: "noreply@example.com"
+    from-name: "SecureAuth"
+    tls: true
+  # Password recovery link expiry
+  recovery-token-ttl-minutes: 30
+
+geoip:
+  enabled: false
+  # Path to MaxMind GeoLite2-Country.mmdb
+  database-path: "plugins/SecureAuth/GeoLite2-Country.mmdb"
+  # Block these countries (ISO 3166-1 alpha-2 codes)
+  blocked-countries: []
+  # Whitelist these countries (empty = allow all not blocked)
+  allowed-countries: []
+
+# Messages sent to player via ActionBar while not authenticated
+auth:
+  # Seconds player has to authenticate before being kicked
+  login-timeout-seconds: 60
+  # Blur player's view until authenticated (via blindness effect)
+  blind-before-auth: true
+  # Prevent chat while not authenticated
+  block-chat: true
+  # Prevent movement while not authenticated
+  block-movement: false
+
+# Rate limiting
+rate-limit:
+  # /register: max attempts per window
+  register-max: 3
+  register-window-seconds: 60
+  # /login: max attempts per window (separate from bruteforce ban)
+  login-max: 10
+  login-window-seconds: 60
+  # /2fa: max attempts
+  totp-max: 5
+  totp-window-seconds: 60
+
+# Debug mode (disable in production)
+debug: false
+
+# Webhooks — Discord notifications for auth events
+#
+# Creates rich Embed messages in your Discord channel.
+# To get a webhook URL: Channel Settings → Integrations → Webhooks → New Webhook
+#
+# Events: REGISTER, LOGIN, LOGOUT, LOGIN_FAIL, IP_BAN, TOTP_ENABLE, TOTP_DISABLE
+# Leave 'events' as an empty list [] to receive all events.
+#
+# To enable, uncomment and fill in your webhook URLs:
+# webhooks:
+#   - url: "https://discord.com/api/webhooks/YOUR_ID/YOUR_TOKEN"
+#     enabled: true
+#     events: []
+#   - url: "https://discord.com/api/webhooks/OTHER_ID/OTHER_TOKEN"
+#     enabled: true
+#     events: ["LOGIN_FAIL", "IP_BAN"]
+webhooks: []
+
+# Update checker — checks GitHub Releases for newer versions of SecureAuth.
+# Runs once at startup on a virtual thread (non-blocking).
+# Requires outbound HTTPS to api.github.com
+update-checker:
+  enabled: true

@@ -1,0 +1,67 @@
+name: SecureAuth
+version: '${version}'
+main: dev.n1xend.secureauth.SecureAuthPlugin
+api-version: '1.21'
+description: Modern authentication plugin with 2FA, AntiBot, GeoIP and more
+authors:
+  - n1xend
+website: https://github.com/n1xend/SecureAuth
+
+dependencies:
+  server:
+    PlaceholderAPI:
+      required: false
+      load: BEFORE
+    Vault:
+      required: false
+      load: BEFORE
+    LuckPerms:
+      required: false
+      load: BEFORE
+    WorldGuard:
+      required: false
+      load: BEFORE
+
+permissions:
+  secureauth.admin:
+    description: Full admin access to SecureAuth
+    default: op
+    children:
+      secureauth.admin.reload: true
+      secureauth.admin.forcelogin: true
+      secureauth.admin.resetpassword: true
+      secureauth.admin.unban: true
+      secureauth.admin.debug: true
+      secureauth.admin.history: true
+      secureauth.admin.stats: true
+      secureauth.admin.listbans: true
+  secureauth.admin.reload:
+    description: Reload plugin configuration
+    default: op
+  secureauth.admin.forcelogin:
+    description: Force login a player
+    default: op
+  secureauth.admin.resetpassword:
+    description: Reset a player's password
+    default: op
+  secureauth.admin.unban:
+    description: Unban an IP address
+    default: op
+  secureauth.admin.debug:
+    description: Toggle debug mode
+    default: op
+  secureauth.admin.history:
+    description: View audit history for a player
+    default: op
+  secureauth.admin.stats:
+    description: View server authentication statistics
+    default: op
+  secureauth.admin.listbans:
+    description: List all active IP bans
+    default: op
+  secureauth.cooldown.bypass:
+    description: Bypass command cooldowns
+    default: op
+  secureauth.2fa.bypass:
+    description: Bypass 2FA requirement
+    default: false

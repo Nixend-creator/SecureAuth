@@ -51,7 +51,7 @@ jobs:
           ignore-unfixed: true
 
       - name: Upload JAR artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: SecureAuth-${{ github.sha }}
           path: build/libs/SecureAuth-*.jar

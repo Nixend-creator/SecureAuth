@@ -1,9 +1,10 @@
 package dev.n1xend.secureauth.command;
 
 import dev.n1xend.secureauth.SecureAuthPlugin;
-import dev.n1xend.secureauth.audit.AuditEvent;
 import dev.n1xend.secureauth.antibot.AntiBotService;
-import dev.n1xend.secureauth.config.PluginConfig;
+import dev.n1xend.secureauth.audit.AuditEntry;
+import dev.n1xend.secureauth.audit.AuditEvent;
+import dev.n1xend.secureauth.audit.AuditLogService;
 import dev.n1xend.secureauth.debug.DebugLogger;
 import dev.n1xend.secureauth.i18n.LanguageManager;
 import dev.n1xend.secureauth.module.ModuleManager;
@@ -14,8 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import dev.n1xend.secureauth.audit.AuditEntry;
-import dev.n1xend.secureauth.audit.AuditLogService;
 import java.util.List;
 import java.util.UUID;
 
@@ -28,17 +27,15 @@ public final class AdminCommand {
 
     private final SecureAuthPlugin plugin;
     private final LanguageManager lang;
-    private final PluginConfig config;
     private final PlayerDataService playerData;
     private final ModuleManager modules;
     private final AntiBotService antiBot;
     private final DebugLogger debug;
 
-    public AdminCommand(SecureAuthPlugin plugin, LanguageManager lang, PluginConfig config,
-            PlayerDataService playerData, ModuleManager modules, AntiBotService antiBot, DebugLogger debug) {
+    public AdminCommand(SecureAuthPlugin plugin, LanguageManager lang, PlayerDataService playerData,
+            ModuleManager modules, AntiBotService antiBot, DebugLogger debug) {
         this.plugin = plugin;
         this.lang = lang;
-        this.config = config;
         this.playerData = playerData;
         this.modules = modules;
         this.antiBot = antiBot;
@@ -138,8 +135,7 @@ public final class AdminCommand {
                         .execute(() -> lang.send(sender, "admin.resetpassword.not-found", "player", targetName));
                 return;
             }
-            var data = playerData.getRepository().findByUuid(targetUuid);
-            if (data.isEmpty()) {
+            if (playerData.getRepository().findByUuid(targetUuid).isEmpty()) {
                 plugin.getMainThreadExecutor()
                         .execute(() -> lang.send(sender, "admin.resetpassword.not-found", "player", targetName));
                 return;

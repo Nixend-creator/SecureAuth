@@ -22,6 +22,8 @@ public final class StartupTimer {
         this.log = log;
     }
 
+    /** Marks the start of a named stage. The {@code name} is echoed by {@link #end}. */
+    @SuppressWarnings("unused")
     public void stage(String name) {
         currentStageStart = System.currentTimeMillis();
     }

@@ -7,6 +7,7 @@ import dev.n1xend.secureauth.api.impl.SecureAuthApiImpl;
 import dev.n1xend.secureauth.api.impl.SessionApiImpl;
 import dev.n1xend.secureauth.api.impl.TotpApiImpl;
 import dev.n1xend.secureauth.antibot.AntiBotService;
+import dev.n1xend.secureauth.audit.AuditLogService;
 import dev.n1xend.secureauth.command.AdminCommand;
 import dev.n1xend.secureauth.command.AuthCommand;
 import dev.n1xend.secureauth.config.PluginConfig;
@@ -26,9 +27,8 @@ import dev.n1xend.secureauth.security.PasswordService;
 import dev.n1xend.secureauth.session.SessionService;
 import dev.n1xend.secureauth.shutdown.ShutdownManager;
 import dev.n1xend.secureauth.twofa.TotpService;
-import dev.n1xend.secureauth.util.StartupTimer;
-import dev.n1xend.secureauth.audit.AuditLogService;
 import dev.n1xend.secureauth.update.UpdateChecker;
+import dev.n1xend.secureauth.util.StartupTimer;
 import dev.n1xend.secureauth.webhook.WebhookService;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -115,7 +115,7 @@ public final class SecureAuthPlugin extends JavaPlugin {
         timer.stage("Services");
         passwordService = new PasswordService(pluginConfig);
         sessionService = new SessionService(database, pluginConfig);
-        playerDataService = new PlayerDataService(database, sessionService, getSLF4JLogger());
+        playerDataService = new PlayerDataService(database, getSLF4JLogger());
         totpService = new TotpService(database, pluginConfig);
         emailService = new EmailService(pluginConfig, getSLF4JLogger());
         geoIpService = new GeoIpService(pluginConfig, getSLF4JLogger());
@@ -132,7 +132,7 @@ public final class SecureAuthPlugin extends JavaPlugin {
         timer.end("Integrations");
 
         // Webhooks
-        webhookService = new WebhookService(pluginConfig.getWebhooks(), getSLF4JLogger());
+        webhookService = new WebhookService(pluginConfig.getWebhooks(), getPluginMeta().getVersion(), getSLF4JLogger());
         var wh = pluginConfig.getWebhooks();
         if (!wh.isEmpty()) {
             getSLF4JLogger().info("[SecureAuth] Webhooks: {} target(s) configured.", wh.size());
@@ -205,8 +205,7 @@ public final class SecureAuthPlugin extends JavaPlugin {
     private void registerCommands() {
         var authCmd = new AuthCommand(this, lang, pluginConfig, playerDataService, passwordService, sessionService,
                 totpService, emailService);
-        var adminCmd = new AdminCommand(this, lang, pluginConfig, playerDataService, moduleManager, antiBotService,
-                debugLogger);
+        var adminCmd = new AdminCommand(this, lang, playerDataService, moduleManager, antiBotService, debugLogger);
 
         var cmdMap = getServer().getCommandMap();
         cmdMap.register("secureauth", authCmd.registerLogin());
@@ -283,19 +282,19 @@ public final class SecureAuthPlugin extends JavaPlugin {
         return webhookService;
     }
 
-    /**
-     * Shuts down the current WebhookService executor and creates a new one
-     * with targets freshly read from config. Called by {@link dev.n1xend.secureauth.module.ModuleManager}
-     * during {@code /saadmin reload}.
-     */
     public UpdateChecker getUpdateChecker() {
         return updateChecker;
     }
 
+    /**
+     * Shuts down the current {@link WebhookService} executor and creates a new one
+     * with targets freshly read from config.
+     * Called by {@link dev.n1xend.secureauth.module.ModuleManager} during {@code /saadmin reload}.
+     */
     public void reloadWebhookService() {
         if (webhookService != null)
             webhookService.shutdown();
-        webhookService = new WebhookService(pluginConfig.getWebhooks(), getSLF4JLogger());
+        webhookService = new WebhookService(pluginConfig.getWebhooks(), getPluginMeta().getVersion(), getSLF4JLogger());
     }
 
     public AuditLogService getAuditLogService() {

@@ -5,6 +5,46 @@
 
 ---
 
+## [1.3.0] — 2026-02-27
+
+### Аудит кода — полная техническая очистка
+
+#### Импорты
+
+- `AuthListener.java` — `AuditEvent`, `WebhookService` перемещены перед `org.bukkit.*` (нарушение алфавитного порядка dev.* → org.* → java.*)
+- `PluginConfig.java` — `dev.n1xend.secureauth.webhook.WebhookTarget` перемещён перед `org.bukkit.*`; добавлен явный `import java.util.Collections` вместо полного имени `java.util.Collections.emptyList()` в теле метода
+- `TotpService.java` — wildcard `dev.samstevens.totp.code.*` заменён на явные `CodeGenerator`, `DefaultCodeGenerator`, `HashingAlgorithm`; wildcard `java.util.*` заменён на `ArrayList`, `List`, `UUID`
+- `MigrationManager.java` — удалён `import java.util.stream.Collectors`; `reader.lines().collect(Collectors.joining("\n"))` заменён на прямой `readLine()` + `StringBuilder`
+
+#### Javadoc
+
+- `SecureAuthPlugin.java` — Javadoc для `reloadWebhookService()` ошибочно стоял перед `getUpdateChecker()` и не был связан ни с каким методом; перемещён на правильный метод с расширенным описанием
+
+#### Стиль и форматирование
+
+- `AdminCommand.java` — убрана двойная пустая строка между `handleDebug()` и `handleHistory()`
+- `AuthListener.onPlayerQuit()` — убраны избыточные поясняющие комментарии к строкам audit/webhook (код самодокументирован)
+
+#### GitHub Actions
+
+- `ci.yml`, `codeql.yml` — step name `Set up Java 25` исправлен на `Set up Java 21` (только описание шага; фактическая версия `java-version: '21'` была верной)
+
+#### Причина, почему `.github/` не загрузился на GitHub
+
+Папка `.github/` начинается с точки — некоторые git GUI-клиенты (IntelliJ IDEA, GitHub Desktop) и файловые менеджеры Windows скрывают такие папки и не включают их в первоначальный коммит.
+
+**Решение** — выполнить в терминале:
+```bash
+git add .github/ --force
+git commit -m "ci: add GitHub Actions workflows"
+git push origin main
+```
+После этого создание тега `v1.3.0` запустит `release.yml` и создаст релиз автоматически.
+
+**Обновление с 1.2.0**: только JAR, config и lang-файлы не изменились.
+
+---
+
 ## [1.2.0] — 2026-02-26
 
 ### Добавлено

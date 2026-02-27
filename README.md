@@ -1,4 +1,4 @@
-# 🔐 SecureAuth v1.2.0
+# 🔐 SecureAuth v1.3.0
 
 [![Release](https://img.shields.io/github/v/release/n1xend/SecureAuth)](https://github.com/n1xend/SecureAuth/releases)
 [![License](https://img.shields.io/github/license/n1xend/SecureAuth)](LICENSE)

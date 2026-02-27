@@ -42,7 +42,7 @@ jobs:
           fail_ci_if_error: false
 
       - name: Security scan (Trivy)
-        uses: aquasecurity/trivy-action@0.20.0
+        uses: aquasecurity/trivy-action@0.34.1
         with:
           scan-type: 'fs'
           scan-ref: '.'

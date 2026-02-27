@@ -103,7 +103,7 @@ debug: false
 # Creates rich Embed messages in your Discord channel.
 # To get a webhook URL: Channel Settings → Integrations → Webhooks → New Webhook
 #
-# Events: REGISTER, LOGIN, LOGOUT, LOGIN_FAIL, IP_BAN, TOTP_ENABLE, TOTP_DISABLE
+# Events: REGISTER, LOGIN, SESSION_RESTORE, DISCONNECT, LOGOUT, LOGIN_FAIL, IP_BAN, TOTP_ENABLE, TOTP_DISABLE
 # Leave 'events' as an empty list [] to receive all events.
 #
 # To enable, uncomment and fill in your webhook URLs:

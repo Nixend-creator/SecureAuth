@@ -48,7 +48,7 @@ dependencies {
     implementation("de.mkammerer:argon2-jvm:2.11")
     implementation("dev.samstevens.totp:totp:1.7.1")
     implementation("com.sun.mail:jakarta.mail:2.0.2")
-    implementation("com.maxmind.geoip2:geoip2:4.3.1")
+    implementation("com.maxmind.geoip2:geoip2:5.0.2")
 
     // ── CompileOnly — provided by Paper / server at runtime ────────────────────
     compileOnly("org.slf4j:slf4j-api:2.0.17")

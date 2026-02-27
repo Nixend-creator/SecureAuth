@@ -45,7 +45,7 @@ dependencies {
         exclude(group = "com.google.protobuf", module = "protobuf-java")
     }
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
-    implementation("de.mkammerer:argon2-jvm:2.11")
+    implementation("de.mkammerer:argon2-jvm:2.12")
     implementation("dev.samstevens.totp:totp:1.7.1")
     implementation("com.sun.mail:jakarta.mail:2.0.2")
     implementation("com.maxmind.geoip2:geoip2:4.3.1")

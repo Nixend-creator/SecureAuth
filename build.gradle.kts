@@ -53,7 +53,7 @@ dependencies {
     // ── CompileOnly — provided by Paper / server at runtime ────────────────────
     compileOnly("org.slf4j:slf4j-api:2.0.17")
     compileOnly("me.clip:placeholderapi:2.11.7")
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1")
     compileOnly("net.luckperms:api:5.4")
 
     // ── Testing ────────────────────────────────────────────────────────────────

@@ -1,7 +1,8 @@
-# 🔐 SecureAuth v1.3.0
+# 🔐 SecureAuth v1.3.2
 
-[![Release](https://img.shields.io/github/v/release/n1xend/SecureAuth)](https://github.com/n1xend/SecureAuth/releases)
-[![License](https://img.shields.io/github/license/n1xend/SecureAuth)](LICENSE)
+[![CI](https://github.com/Nixend-creator/SecureAuth/actions/workflows/ci.yml/badge.svg)](https://github.com/Nixend-creator/SecureAuth/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Nixend-creator/SecureAuth)](https://github.com/Nixend-creator/SecureAuth/releases)
+[![License](https://img.shields.io/github/license/Nixend-creator/SecureAuth)](LICENSE)
 [![Paper](https://img.shields.io/badge/Paper-1.21.1+-orange)](https://papermc.io)
 [![Java](https://img.shields.io/badge/Java-21-blue)](https://adoptium.net)
 
@@ -297,4 +298,4 @@ database:
 
 ## 📄 Лицензия
 
-MIT © [n1xend](https://github.com/n1xend)
+MIT © [Nixend-creator](https://github.com/Nixend-creator)

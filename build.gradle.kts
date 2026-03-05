@@ -10,7 +10,7 @@ plugins {
 }
 
 group   = "dev.n1xend"
-version = "1.3.0"
+version = "1.3.2"
 description = "Modern authentication plugin for Paper/Purpur 1.21.1+"
 
 java {
@@ -47,7 +47,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:3.2.0")
     implementation("de.mkammerer:argon2-jvm:2.11")
     implementation("dev.samstevens.totp:totp:1.7.1")
-    implementation("com.sun.mail:jakarta.mail:2.0.2")
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
     implementation("com.maxmind.geoip2:geoip2:4.3.1")
 
     // ── CompileOnly — provided by Paper / server at runtime ────────────────────

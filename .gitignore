@@ -21,4 +21,4 @@ server/
 *.mmdb
 
 # Gradle wrapper jar — must be committed, do NOT exclude
-!gradle/wrapper/gradle-wrapper.jar
+!.gradle/wrapper/gradle-wrapper.jar

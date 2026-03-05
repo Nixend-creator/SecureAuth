@@ -4,8 +4,8 @@ main: dev.n1xend.secureauth.SecureAuthPlugin
 api-version: '1.21'
 description: Modern authentication plugin with 2FA, AntiBot, GeoIP and more
 authors:
-  - n1xend
-website: https://github.com/n1xend/SecureAuth
+  - Nixend-creator
+website: https://github.com/Nixend-creator/SecureAuth
 
 dependencies:
   server:

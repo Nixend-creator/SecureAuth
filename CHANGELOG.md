@@ -5,6 +5,43 @@
 
 ---
 
+## [1.3.2] — 2026-03-05
+
+### Bug fix
+
+**Сессии не сохранялись — игрокам приходилось вводить пароль при каждом заходе**
+
+Корневых причин было две:
+
+1. **`DatabaseManager` — отсутствие `serverTimezone=UTC` в JDBC URL**
+   - MySQL/MariaDB коннектор без явного `serverTimezone` использует системную таймзону JVM
+   - Если таймзона JVM отличалась от таймзоны БД — `expires_at > NOW()` всегда возвращало `false`, сессия считалась истёкшей сразу после создания
+   - Исправлено: добавлен `&serverTimezone=UTC` в JDBC URL
+
+2. **`SessionRepository` — даты сравнивались как строки через `setString()`**
+   - `expires_at` записывался через `LocalDateTime.format()` + `setString()` — Java отдавала время в локальной таймзоне JVM, а база хранила в своей
+   - Переписан: `expires_at` теперь вычисляется целиком на стороне БД (`DATE_ADD(NOW(), INTERVAL ? MINUTE)` / `datetime('now', '+N minutes')`); проверка тоже через `NOW()` на стороне БД — никакой конверсии времени Java больше нет
+
+**`AuditEvent` — добавлен `DISCONNECT`**
+- `onPlayerQuit()` записывал `LOGOUT` вместо `DISCONNECT`; исправлено
+
+**Обновление с 1.3.1**: только JAR. Структура БД не менялась — пересоздавать таблицы не нужно.
+
+---
+
+## [1.3.1] — 2026-03-02
+
+### Bug fix
+
+**`AuditLogService.prune()` — совместимость с MariaDB**
+- `DELETE ... WHERE id NOT IN (SELECT ... LIMIT ?)` бросал `WARN: This version of MariaDB doesn't yet support 'LIMIT & IN/ALL/ANY/SOME subquery'`
+- Подзапрос обёрнут в derived table: `NOT IN (SELECT id FROM (SELECT ... LIMIT ?) AS kept)` — синтаксис принимается MariaDB, MySQL и SQLite одинаково
+- Audit-события (`LOGIN`, `REGISTER`, `LOGOUT` и др.) теперь корректно записываются на MariaDB-серверах
+
+**Обновление с 1.3.0**: только JAR, config и lang-файлы не изменились.
+
+---
+
 ## [1.3.0] — 2026-02-27
 
 ### Аудит кода — полная техническая очистка

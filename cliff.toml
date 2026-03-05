@@ -22,10 +22,10 @@ footer = """
     {% if release.version %}\
         {% if release.previous.version %}\
             [{{ release.version | trim_start_matches(pat="v") }}]: \
-                https://github.com/n1xend/SecureAuth/compare/{{ release.previous.version }}...{{ release.version }}
+                https://github.com/Nixend-creator/SecureAuth/compare/{{ release.previous.version }}...{{ release.version }}
         {% endif %}\
     {% else %}\
-        [unreleased]: https://github.com/n1xend/SecureAuth/compare/{{ release.previous.version }}...HEAD
+        [unreleased]: https://github.com/Nixend-creator/SecureAuth/compare/{{ release.previous.version }}...HEAD
     {% endif %}\
 {% endfor %}
 """

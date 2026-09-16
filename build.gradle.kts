@@ -32,7 +32,7 @@ dependencies {
     paperweight.paperDevBundle("1.21.1-R0.1-SNAPSHOT")
 
     // ── Shaded (bundled into the fat jar) ─────────────────────────────────────
-    implementation("com.zaxxer:HikariCP:7.0.2")                          // 6.3.0 → 7.0.2
+    implementation("com.zaxxer:HikariCP:7.1.0")                          // 6.3.0 → 7.1.0
 
     // Flyway removed — replaced with built-in MigrationManager (see database/MigrationManager.java).
     // Flyway 11.13+ has a bug in fat jars (classpath:db/callback crash), and

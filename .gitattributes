@@ -1,0 +1,15 @@
+# Normalize line endings to LF in the repository
+* text=auto eol=lf
+
+# Force LF for shell scripts
+*.sh text eol=lf
+gradlew text eol=lf
+
+# Binary files — no line-ending conversion
+*.jar binary
+*.class binary
+*.mmdb binary
+*.png binary
+
+# Ensure GitHub Actions workflows are always LF
+.github/workflows/*.yml text eol=lf

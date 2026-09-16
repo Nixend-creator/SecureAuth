@@ -1,0 +1,192 @@
+lang-version: 3
+# SecureAuth — Русские сообщения
+# Переменные: {player}, {seconds}, {attempts}, {ip}, {country}, {code}
+
+prefix: "<gray>[<aqua>SecureAuth</aqua>]</gray> "
+
+# Регистрация
+register:
+  usage: "<red>Использование: /register <пароль> <пароль-ещё-раз></red>"
+  success: "<green>✓ Регистрация прошла успешно! Теперь войдите: <yellow>/login <пароль></yellow></green>"
+  already-registered: "<red>✗ Вы уже зарегистрированы. Используйте /login.</red>"
+  already-logged-in: "<red>✗ Вы уже вошли в аккаунт.</red>"
+  password-mismatch: "<red>✗ Пароли не совпадают.</red>"
+  password-too-short: "<red>✗ Пароль должен содержать минимум {min} символов.</red>"
+  password-too-long: "<red>✗ Пароль не должен превышать {max} символов.</red>"
+  cooldown: "<yellow>⏳ Подождите {seconds}с перед повторной регистрацией.</yellow>"
+  rate-limited: "<red>✗ Слишком много попыток регистрации. Попробуйте позже.</red>"
+
+# Вход
+login:
+  usage: "<red>Использование: /login <пароль></red>"
+  success: "<green>✓ Вы успешно вошли в аккаунт!</green>"
+  not-registered: "<red>✗ Вы не зарегистрированы. Используйте /register.</red>"
+  already-logged-in: "<red>✗ Вы уже вошли в аккаунт.</red>"
+  wrong-password: "<red>✗ Неверный пароль. Осталось попыток: {attempts}.</red>"
+  banned: "<red>✗ Слишком много неверных попыток. Вы заблокированы на {minutes} минут.</red>"
+  cooldown: "<yellow>⏳ Подождите {seconds}с перед следующей попыткой.</yellow>"
+  rate-limited: "<red>✗ Слишком много попыток входа. Попробуйте позже.</red>"
+  timeout: "<red>✗ Время авторизации истекло. Вы были отключены.</red>"
+  session-restored: "<green>✓ Сессия восстановлена. Добро пожаловать, {player}!</green>"
+  require-auth: "<yellow>⚠ Войдите в аккаунт: /login <пароль></yellow>"
+  require-register: "<yellow>⚠ Зарегистрируйтесь: /register <пароль> <пароль></yellow>"
+  require-2fa: "<yellow>🔑 Введите код 2FA: /2fa <код></yellow>"
+
+# Выход
+logout:
+  success: "<green>✓ Вы вышли из аккаунта.</green>"
+  not-logged-in: "<red>✗ Вы не авторизованы.</red>"
+
+session:
+  none: "<yellow>У вас нет доверенной сессии — /login потребуется при каждом входе.</yellow>"
+  status-active: "<green>✓ Активная доверенная сессия с {ip}, создана {created}, истекает {expires}.</green>"
+  status-expired: "<yellow>Ваша последняя доверенная сессия (с {ip}) истекла {expires}. Потребуется /login.</yellow>"
+  revoke-success: "<green>✓ Доверенная сессия отозвана. Следующее подключение потребует /login.</green>"
+  revoke-none: "<yellow>Отзывать было нечего — доверенной сессии не было.</yellow>"
+
+# Смена пароля
+changepassword:
+  usage: "<red>Использование: /changepassword <старый-пароль> <новый-пароль></red>"
+  success: "<green>✓ Пароль успешно изменён.</green>"
+  wrong-old: "<red>✗ Неверный текущий пароль.</red>"
+  same-password: "<red>✗ Новый пароль должен отличаться от текущего.</red>"
+  not-logged-in: "<red>✗ Для смены пароля необходимо войти в аккаунт.</red>"
+
+# Двухфакторная аутентификация
+twofa:
+  usage: "<red>Использование: /2fa <код|enable|disable|backup></red>"
+  required-reminder: "<yellow>⚠ Ваша роль требует двухфакторной аутентификации. Пожалуйста, настройте её через /2fa enable.</yellow>"
+  enable:
+    start: |
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      <white>Шаг 1: Откройте ссылку в браузере, отсканируйте QR-код:
+      <aqua><click:open_url:'{qr-url}'><u>🔗 Открыть QR-код</u></click>
+      <white>Или введите секрет вручную в Google Authenticator:
+      <green>{secret}
+      <white>Шаг 2: Подтвердите: <aqua>/2fa enable <код>
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    start-manual: |
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      <white>Шаг 1: Введите этот секрет вручную в Google Authenticator (или любое TOTP-приложение):
+      <green>{secret}
+      <white>Шаг 2: Подтвердите: <aqua>/2fa enable <код>
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    confirm-usage: "<red>Использование: /2fa enable <6-значный-код></red>"
+    success: |
+      <green>✓ 2FA успешно включена!
+      <white>Резервные коды (сохраните!):
+      {backup-codes}
+    already-enabled: "<red>✗ 2FA уже включена.</red>"
+    invalid-code: "<red>✗ Неверный код 2FA. Попробуйте снова.</red>"
+  disable:
+    confirm-usage: "<red>Использование: /2fa disable <6-значный-код></red>"
+    success: "<green>✓ 2FA отключена.</green>"
+    not-enabled: "<red>✗ 2FA не включена.</red>"
+    invalid-code: "<red>✗ Неверный код 2FA.</red>"
+  verify:
+    invalid-code: "<red>✗ Неверный код 2FA. Осталось попыток: {attempts}.</red>"
+    success: "<green>✓ 2FA подтверждена. Вы вошли в аккаунт.</green>"
+    rate-limited: "<red>✗ Слишком много попыток 2FA. Подождите.</red>"
+  backup:
+    list: |
+      <aqua>━━━ Резервные коды ━━━
+      {codes}
+      <gray>(Использованные коды помечены ✗)
+    regenerated: "<green>✓ Созданы новые резервные коды. Старые коды больше не действуют.</green>"
+
+# Восстановление пароля
+recovery:
+  usage: "<red>Использование: /recover</red>"
+  sent: "<green>✓ Письмо с восстановлением отправлено на {email}. Используйте /recover confirm <токен> <новый_пароль> чтобы завершить.</green>"
+  failed: "<red>✗ Не удалось отправить письмо. Проверьте настройки SMTP или попробуйте позже.</red>"
+  not-found: "<red>✗ Аккаунт с таким email не найден.</red>"
+  email-not-set: "<red>✗ К вашему аккаунту не привязан email.</red>"
+  no-email-linked: "<red>✗ К вашему аккаунту не привязан email восстановления. Обратитесь к администрации, либо привяжите email через /setemail <email>, когда будете авторизованы.</red>"
+  cooldown: "<yellow>⏳ Письмо уже отправлено. Проверьте почту или подождите {seconds}с.</yellow>"
+  disabled: "<red>✗ Восстановление по email отключено на этом сервере.</red>"
+  confirm-usage: "<red>Использование: /recover confirm <токен> <новый_пароль></red>"
+  confirm-success: "<green>✓ Пароль успешно изменён! Все активные сессии сброшены — используйте /login с новым паролем.</green>"
+  invalid-token: "<red>✗ Неверный или истёкший токен восстановления. Запросите новый через /recover.</red>"
+  rate-limited: "<red>✗ Слишком много попыток восстановления. Подождите немного.</red>"
+
+setemail:
+  usage: "<red>Использование: /setemail <email></red>"
+  confirm-usage: "<red>Использование: /setemail confirm <токен></red>"
+  invalid-format: "<red>✗ Это не похоже на корректный email-адрес.</red>"
+  sent: "<green>✓ Письмо с подтверждением отправлено на {email}. Используйте /setemail confirm <токен> чтобы привязать его.</green>"
+  confirm-success: "<green>✓ Email восстановления подтверждён и привязан к аккаунту.</green>"
+  invalid-token: "<red>✗ Неверный или истёкший токен подтверждения. Запросите новый через /setemail <email>.</red>"
+
+# Команды администратора
+admin:
+  twofa-status:
+    not-configured: "<yellow>two-factor.require-for-permission не задан в config.yml — проверять нечего.</yellow>"
+    none-online: "<yellow>Сейчас онлайн нет игроков с правом '{permission}'.</yellow>"
+    header: "<aqua>━━ Статус 2FA для '{permission}' ━━</aqua>"
+    compliant: "<green>✓ Есть 2FA ({count}): {names}</green>"
+    missing: "<red>✗ Нет 2FA ({count}): {names}</red>"
+  reload:
+    start: "<yellow>⟳ Перезагрузка SecureAuth...</yellow>"
+    module-ok: "<green>  ✓ {module} перезагружен ({ms}мс)</green>"
+    module-failed: "<red>  ✗ {module} ошибка: {error}</red>"
+    done: "<green>✓ SecureAuth перезагружен за {total-ms}мс.</green>"
+  forcelogin:
+    usage: "<red>Использование: /saadmin forcelogin <игрок></red>"
+    success: "<green>✓ Принудительный вход выполнен для {player}.</green>"
+    not-found: "<red>✗ Игрок не найден: {player}.</red>"
+  resetpassword:
+    usage: "<red>Использование: /saadmin resetpassword <игрок> <новый-пароль></red>"
+    success: "<green>✓ Пароль сброшен для {player}.</green>"
+    not-found: "<red>✗ Игрок не найден: {player}.</red>"
+    notify: "<yellow>⚠ Ваш пароль был сброшен администратором.</yellow>"
+  unban:
+    usage: "<red>Использование: /saadmin unban <ip></red>"
+    success: "<green>✓ IP {ip} разблокирован.</green>"
+    not-banned: "<yellow>IP {ip} не был заблокирован.</yellow>"
+  debug:
+    enabled: "<green>✓ Режим отладки включён.</green>"
+    disabled: "<yellow>✓ Режим отладки отключён.</yellow>"
+  history:
+    usage: "<red>Использование: /saadmin history <игрок></red>"
+    not-found: "<red>✗ Игрок не найден: {player}.</red>"
+    empty: "<yellow>История для {player} пуста.</yellow>"
+    header: "<aqua>━━━ История {player} (последние {count} событий) ━━━</aqua>"
+    entry: "<gray>{time}</gray> <white>{event}</white> <dark_gray>{ip}</dark_gray>{detail}"
+  stats:
+    header: "<aqua>━━━━━━━━ SecureAuth — Статистика ━━━━━━━━</aqua>"
+    players: "<white>👤 Игроки:        <green>{online}</green> онлайн / <gray>{total}</gray> всего"
+    sessions: "<white>🔑 Сессии:        <green>{active}</green> активных"
+    bans: "<white>🔨 IP-банов:       <red>{active}</red> активных"
+    fails: "<white>⚠️  Неудач/час:    <yellow>{count}</yellow>"
+    registrations: "<white>✅ Регистраций/24ч: <green>{count}</green>"
+  listbans:
+    header: "<aqua>━━━ Активные IP-баны ({count}) ━━━</aqua>"
+    empty: "<yellow>Нет активных IP-банов.</yellow>"
+    entry: "<red>{ip}</red> <gray>—</gray> <white>{reason}</white> <gray>(до {expires})</gray>"
+  no-permission: "<red>✗ У вас нет прав для этого действия.</red>"
+
+# GeoIP
+geoip:
+  blocked: "<red>✗ Подключения из {country} запрещены на этом сервере.</red>"
+
+# AntiBot
+antibot:
+  connection-flood: "<red>✗ Слишком много подключений с вашего IP. Подождите.</red>"
+  ip-blocked: "<red>✗ Ваш IP временно заблокирован из-за подозрительной активности.</red>"
+
+# Общие
+general:
+  player-only: "<red>✗ Эта команда только для игроков.</red>"
+  not-logged-in: "<red>✗ Для этого действия необходимо войти в аккаунт.</red>"
+  error: "<red>✗ Произошла ошибка. Попробуйте снова.</red>"
+  chat-command-redirected: "<yellow>⚠ Похоже, вы забыли '/' перед командой — сообщение НЕ отправлено в чат, а выполнено как команда. Всегда начинайте команды с '/', чтобы не раскрыть пароль случайно.</yellow>"
+
+# Сообщения при кике (видны на экране отключения)
+kick:
+  login-timeout: "⏱ Время авторизации истекло.\nПодключитесь снова и войдите в течение {seconds} секунд."
+  banned: "🔒 Слишком много неверных попыток входа.\nВы заблокированы на {minutes} минут."
+  ip-blocked: "🚫 Ваш IP заблокирован.\nОбратитесь к администрации сервера."
+  geoip-blocked: "🌍 Подключения из вашей страны ({country}) запрещены."
+  server-shutdown: "🔄 Сервер перезапускается. Подключитесь немного позже."
+update-checker:
+  available: "<gold>★ Доступна новая версия SecureAuth: <white>v{current}</white> → <green>v{latest}</green><gold>. Скачать: <aqua><click:open_url:'{url}'><u>{url}</u></click></aqua>"

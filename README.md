@@ -1,0 +1,349 @@
+# 🔐 SecureAuth v1.6.2
+
+[![CI](https://github.com/Nixend-creator/SecureAuth/actions/workflows/ci.yml/badge.svg)](https://github.com/Nixend-creator/SecureAuth/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Nixend-creator/SecureAuth)](https://github.com/Nixend-creator/SecureAuth/releases)
+[![License](https://img.shields.io/github/license/Nixend-creator/SecureAuth)](LICENSE)
+[![Paper](https://img.shields.io/badge/Paper-1.21.1+-orange)](https://papermc.io)
+[![Java](https://img.shields.io/badge/Java-21-blue)](https://adoptium.net)
+
+Современный плагин аутентификации для серверов **Paper / Purpur 1.21.1+**.  
+Argon2id хэширование, TOTP 2FA, Discord-вебхуки, AntiBot, GeoIP, сессии по IP — без NMS.
+
+---
+
+## ✨ Возможности
+
+| Функция | Описание |
+|---|---|
+| 🔐 **Регистрация / Вход** | Argon2id хэширование паролей, защита от брутфорса, кулдауны |
+| 🛡️ **AntiBot** | Лимит подключений в секунду, авто-бан IP при множестве неудачных попыток |
+| 🔑 **2FA (TOTP)** | Google Authenticator / Authy, QR-URI, 8 резервных кодов |
+| 📱 **Сессии по IP** | Авто-вход при совпадении IP, настраиваемый TTL |
+| 🌍 **GeoIP** | Блокировка/разрешение стран (MaxMind GeoLite2-Country) |
+| 📧 **Email-восстановление** | Сброс пароля через SMTP |
+| 🔔 **Проверка обновлений**
+- Автоматическая проверка новых релизов на GitHub при старте (async, virtual thread)
+- Включается/выключается флагом `update-checker.enabled` в `config.yml`
+- Семантическое сравнение версий, поддержка pre-release тегов
+
+**Discord-вебхуки** | Rich Embed уведомления по 7 событиям аутентификации |
+| 🎨 **i18n** | MiniMessage, русский + английский языки из коробки |
+| ⚡ **Производительность** | Java 21 Virtual Threads, Caffeine cache, HikariCP пул |
+| 🔗 **Интеграции** | PlaceholderAPI (9 плейсхолдеров) |
+| 🌐 **Public API** | `SecureAuthApi` через `ServicesManager` для других плагинов |
+
+---
+
+## 📋 Требования
+
+| Компонент | Версия |
+|---|---|
+| Java | **21** LTS или новее |
+| Paper / Purpur | **1.21.1+** |
+| MySQL / MariaDB *(опционально)* | MySQL 8.0+ / MariaDB 10.5+ |
+| MaxMind DB *(опционально)* | GeoLite2-Country.mmdb |
+
+---
+
+## 🚀 Установка
+
+```
+1. Скачайте SecureAuth-1.0.0.jar со страницы релизов
+2. Поместите JAR в папку plugins/
+3. Запустите сервер — создастся plugins/SecureAuth/config.yml
+4. Настройте config.yml (БД, язык, вебхуки и т.д.)
+5. /saadmin reload  или  перезапустите сервер
+```
+
+**Для GeoIP:** скачайте `GeoLite2-Country.mmdb` с [MaxMind](https://dev.maxmind.com/geoip/geolite2-free-geolocation-data),
+поместите в `plugins/SecureAuth/` и установите `geoip.enabled: true`.
+
+---
+
+## ⚙️ Конфигурация
+
+Полный конфиг с комментариями: [`config.yml`](src/main/resources/config.yml)
+
+```yaml
+config-version: 3
+language: ru          # en | ru
+
+database:
+  type: sqlite        # sqlite | mysql
+
+security:
+  argon2:
+    memory: 65536     # 64 MB — чем больше, тем безопаснее
+    iterations: 3
+    parallelism: 4
+  max-login-attempts: 5
+  ban-duration-minutes: 30
+  session-timeout-minutes: 30
+  session-ip-binding: true
+  password-min-length: 6
+  password-max-length: 64
+
+antibot:
+  enabled: true
+  max-connections-per-second: 10
+  ip-block-threshold: 10
+  ip-block-duration-minutes: 60
+
+two-factor:
+  enabled: true
+  backup-codes-count: 8
+
+auth:
+  login-timeout-seconds: 60
+  blind-before-auth: true   # эффект слепоты до авторизации
+  block-chat: true
+  block-movement: false
+
+# Discord-вебхуки (подробнее — раздел Webhooks ниже)
+webhooks: []
+```
+
+---
+
+## 🔔 Discord-вебхуки
+
+Плагин отправляет rich Embed в Discord-каналы при событиях аутентификации.
+
+**Как получить URL вебхука:**
+`Channel Settings → Integrations → Webhooks → New Webhook → Copy Webhook URL`
+
+```yaml
+webhooks:
+  # Основной канал — все события
+  - url: "https://discord.com/api/webhooks/ID/TOKEN"
+    enabled: true
+    events: []      # пусто = все события
+
+  # Канал безопасности — только подозрительная активность
+  - url: "https://discord.com/api/webhooks/ID2/TOKEN2"
+    enabled: true
+    events: ["LOGIN_FAIL", "IP_BAN"]
+```
+
+**Доступные события:**
+
+| Событие | Цвет | Описание |
+|---|---|---|
+| `REGISTER` | 🟢 зелёный | Игрок зарегистрировался |
+| `LOGIN` | 🔵 синий | Успешный вход |
+| `LOGOUT` | ⚫ серый | Выход из аккаунта |
+| `LOGIN_FAIL` | 🔴 красный | Неверный пароль |
+| `IP_BAN` | 🔴 красный | IP заблокирован AntiBot |
+| `TOTP_ENABLE` | 🟢 зелёный | Игрок включил 2FA |
+| `TOTP_DISABLE` | 🟡 жёлтый | Игрок отключил 2FA |
+
+Каждый Embed содержит: ник игрока, UUID, IP-адрес, timestamp.
+HTTP-запросы выполняются на виртуальных потоках — сервер не блокируется.
+
+---
+
+## 💬 Команды
+
+### Игровые
+
+| Команда | Описание |
+|---|---|
+| `/register <пароль> <пароль>` | Регистрация нового аккаунта |
+| `/login <пароль>` | Вход в аккаунт |
+| `/logout` | Выход из аккаунта (плюс отзыв сессии) |
+| `/changepassword <старый> <новый>` | Смена пароля |
+| `/2fa enable` | Начать настройку 2FA (QR + секрет) |
+| `/2fa enable <6-значный-код>` | Подтвердить настройку 2FA |
+| `/2fa disable <6-значный-код>` | Отключить 2FA |
+| `/2fa <6-значный-код>` | Ввести код 2FA при входе |
+| `/2fa backup` | Просмотреть/перегенерировать резервные коды |
+| `/setemail <email>` | Привязать email восстановления (требует быть авторизованным) |
+| `/setemail confirm <токен>` | Подтвердить владение новым email |
+| `/recover` | Отправить токен восстановления на привязанный email |
+| `/recover confirm <токен> <новый_пароль>` | Сбросить пароль по токену |
+| `/session` | Статус доверенной сессии (IP, дата создания/истечения) |
+| `/session revoke` | Отозвать сессию без выхода из текущего подключения |
+
+> **Важно:** `/recover` больше не принимает email аргументом — токен всегда
+> уходит только на уже привязанный и подтверждённый через `/setemail` адрес.
+> Это осознанное решение безопасности: команда с email-аргументом позволяла
+> полностью обойти пароль (см. заметки о безопасности ниже).
+
+### Административные (`/saadmin`)
+
+| Команда | Право | Описание |
+|---|---|---|
+| `/saadmin reload` | `secureauth.admin.reload` | Hot-reload конфига и языков |
+| `/saadmin forcelogin <игрок>` | `secureauth.admin.forcelogin` | Принудительный вход |
+| `/saadmin resetpassword <игрок> <пароль>` | `secureauth.admin.resetpassword` | Сброс пароля |
+| `/saadmin unban <ip>` | `secureauth.admin.unban` | Снять IP-бан |
+| `/saadmin listbans` | `secureauth.admin.listbans` | Список активных IP-банов с причиной и датой |
+| `/saadmin history <игрок>` | `secureauth.admin.history` | История auth-событий игрока (последние 20) |
+| `/saadmin stats` | `secureauth.admin.stats` | Статистика: онлайн, сессии, баны, попытки/час |
+| `/saadmin 2fa-status` | `secureauth.admin.2fa-status` | Кто из онлайн-игроков с обязательной 2FA её не включил |
+| `/saadmin debug` | `secureauth.admin.debug` | Переключить debug-режим |
+
+---
+
+## 🔑 Права
+
+| Право | По умолчанию | Описание |
+|---|---|---|
+| `secureauth.admin` | op | Все административные команды |
+| `secureauth.admin.reload` | op | `/saadmin reload` |
+| `secureauth.admin.forcelogin` | op | `/saadmin forcelogin` |
+| `secureauth.admin.resetpassword` | op | `/saadmin resetpassword` |
+| `secureauth.admin.unban` | op | `/saadmin unban` |
+| `secureauth.admin.listbans` | op | `/saadmin listbans` |
+| `secureauth.admin.history` | op | `/saadmin history` |
+| `secureauth.admin.stats` | op | `/saadmin stats` |
+| `secureauth.admin.2fa-status` | op | `/saadmin 2fa-status` |
+| `secureauth.admin.debug` | op | `/saadmin debug` |
+| `secureauth.cooldown.bypass` | op | Обход кулдаунов команд |
+
+---
+
+## 📊 PlaceholderAPI
+
+Требуется установленный [PlaceholderAPI](https://www.spigotmc.org/resources/placeholderapi.6245/).
+
+| Плейсхолдер | Значения | Описание |
+|---|---|---|
+| `%secureauth_is_authenticated%` | `true` / `false` | Авторизован ли игрок сейчас |
+| `%secureauth_is_registered%` | `true` / `false` | Зарегистрирован ли в БД |
+| `%secureauth_auth_status%` | `AUTHENTICATED` / `AWAITING_2FA` / `PENDING` / `OFFLINE` | Точный статус |
+| `%secureauth_has_2fa%` | `true` / `false` | Включена ли 2FA |
+| `%secureauth_has_session%` | `true` / `false` | Активна ли сессия по IP |
+| `%secureauth_registered_at%` | ISO дата / `N/A` | Дата регистрации |
+| `%secureauth_last_login%` | ISO дата / `Never` / `N/A` | Последний вход |
+| `%secureauth_last_login_ip%` | `192.168.*.*` / `N/A` | IP последнего входа (маскированный) |
+| `%secureauth_failed_attempts%` | число | Неудачных попыток за текущую сессию |
+
+---
+
+## 🔗 Интеграции
+
+| Плагин | Обязателен | Что даёт |
+|---|---|---|
+| **PlaceholderAPI** | Нет | 9 плейсхолдеров (см. выше) |
+
+Soft-depend: плагин работает без PlaceholderAPI.
+
+---
+
+## 🌐 Public API
+
+Для других плагинов через Bukkit `ServicesManager`:
+
+```java
+SecureAuthApi api = getServer().getServicesManager()
+    .load(SecureAuthApi.class);
+
+if (api != null) {
+    boolean authed = api.auth().isAuthenticated(player.getUniqueId());
+    boolean has2fa = api.totp().isEnabled(player.getUniqueId());
+
+    // Слушать события аутентификации
+    api.auth().addListener((uuid, from, to) -> {
+        if (to == AuthApi.Stage.AUTHENTICATED) {
+            // игрок вошёл
+        }
+    });
+}
+```
+
+**Доступные под-API:**
+
+| API | Ключевые методы |
+|---|---|
+| `SecureAuthApi` | `version()`, `auth()`, `session()`, `totp()`, `antibot()` |
+| `AuthApi` | `isAuthenticated()`, `getStage()`, `addListener()` |
+| `SessionApi` | `hasValidSession()`, `createSession()`, `invalidateSession()` + async-варианты (`*Async`, возвращают `CompletableFuture`) |
+| `TotpApi` | `isEnabled()` (полностью async) |
+| `AntiBotApi` | `isBanned()`, `banIp()`, `unbanIp()` + async-варианты (`*Async`) |
+
+> Синхронные методы `SessionApi`/`AntiBotApi` выполняют блокирующий JDBC-запрос —
+> не вызывайте их с главного потока сервера, используйте `*Async`-варианты
+> внутри обработчиков событий Bukkit.
+
+---
+
+## 🗄️ База данных
+
+**SQLite** (по умолчанию) — файл `plugins/SecureAuth/data.db`, настройка не нужна.
+
+**MySQL:**
+```yaml
+database:
+  type: mysql
+  mysql:
+    host: localhost
+    port: 3306
+    database: secureauth
+    username: root
+    password: "your_password"
+    pool-size: 10
+```
+
+Схема создаётся автоматически через встроенный `MigrationManager`.
+Таблицы: `sa_players`, `sa_sessions`, `sa_totp`, `sa_ip_bans`, `sa_audit_log`,
+`sa_recovery_tokens`, `sa_email_pending`, `sa_schema_version`.
+
+---
+
+## 🌍 Языки
+
+| Язык | Файл | Статус |
+|---|---|---|
+| English | `lang/en.yml` | ✅ Полный |
+| Русский | `lang/ru.yml` | ✅ Полный |
+
+Добавить язык: скопируйте `en.yml`, переведите, укажите `language: xx` в конфиге.
+Все сообщения поддерживают [MiniMessage](https://docs.advntr.dev/minimessage/format.html) форматирование.
+
+---
+
+## 🔒 Безопасность
+
+**Argon2id** — рекомендованный алгоритм хэширования паролей (Password Hashing Competition 2015). Параметры памяти и итераций настраиваются под мощность сервера. Увеличьте `memory` на мощных серверах для большей стойкости.
+
+**Сессии по IP** — авто-вход при совпадении IP в рамках TTL. При смене IP сессия не работает. Отключите `session-ip-binding: false` если ваши игроки часто меняют IP (мобильный интернет).
+
+**AntiBot** — работает в двух режимах: rate-gate на подключения в секунду и счётчик неудачных попыток на IP. Оба независимы и дополняют друг друга. Лимит попыток входа на аккаунт (`max-login-attempts`) — персистентный (переживает переподключение), не сбрасывается разрывом соединения; автоматически снимается при успешной смене пароля.
+
+**За реверс-прокси (Infinity-Filter и подобные)** — реальный IP игрока становится доступен только в `PlayerJoinEvent`, а не раньше. Проверки бана и GeoIP выполняются в два слоя: до входа (по IP прокси) и повторно сразу после входа (по реальному IP) — это закрывает обход блокировки через прокси.
+
+**Восстановление пароля** — `/recover` никогда не принимает email как аргумент команды; токен уходит только на адрес, привязанный и подтверждённый заранее через `/setemail`. Привязка нового email требует уже быть авторизованным и подтверждения владения адресом — это исключает сценарий, при котором любой, кто просто подключился к чужому аккаунту, мог бы сменить пароль в обход всякой проверки.
+
+**Логи** — пароли, новые пароли и коды 2FA автоматически вычищаются из консоли и `logs/latest.log` через встроенный Log4j2-фильтр, даже если введены случайно без символа `/` прямо в чат.
+
+**MySQL/MariaDB** — рекомендуется включить `database.mysql.use-ssl: true`, если сервер БД не на том же хосте, что и Minecraft-сервер; иначе трафик (включая хеши паролей) идёт по сети в открытом виде.
+
+**Публичный API для других плагинов** — весь пользовательский ввод, попадающий в MiniMessage-шаблоны сообщений (email, IP, причины банов), экранируется перед отображением. Синхронные методы `SessionApi`/`AntiBotApi` выполняют блокирующий JDBC-запрос — используйте async-варианты при вызове с главного потока.
+
+<details>
+<summary>Хронология аудита безопасности (для интересующихся деталями)</summary>
+
+Проект прошёл серию из более чем 20 раундов независимого аудита безопасности.
+Полная хронология находок и исправлений — в [`CHANGELOG.md`](CHANGELOG.md),
+начиная с версии 1.4.0. Наиболее значимые категории находок:
+
+- Обход пароля через `/recover` (полностью переработан)
+- Логирование паролей в консоль и чат (Log4j2-фильтр + защита чата)
+- Обход бана по IP через реверс-прокси (второй слой проверки)
+- MiniMessage-инъекция через плейсхолдеры сообщений (экранирование)
+- Полная неработоспособность бана по IP и включения 2FA на MySQL
+  (непортированный upsert-синтаксис — работало только на SQLite)
+- Гонки состояний в TOTP/backup-кодах, cooldown, счётчике попыток входа
+- Утечка webhook-токена в логи, утечка pendingLogins-счётчика
+
+Если вы обнаружили уязвимость — см. раздел выше про ответственное раскрытие
+информации, не создавайте публичный Issue.
+
+</details>
+
+---
+
+## 📄 Лицензия
+
+MIT © [Nixend-creator](https://github.com/Nixend-creator)

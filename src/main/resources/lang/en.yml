@@ -1,0 +1,192 @@
+lang-version: 3
+# SecureAuth — English messages
+# Variables: {player}, {seconds}, {attempts}, {ip}, {country}, {code}
+
+prefix: "<gray>[<aqua>SecureAuth</aqua>]</gray> "
+
+# Registration
+register:
+  usage: "<red>Usage: /register <password> <confirm-password></red>"
+  success: "<green>✓ Successfully registered! You are now logged in.</green>"
+  already-registered: "<red>✗ You are already registered. Use /login.</red>"
+  already-logged-in: "<red>✗ You are already logged in.</red>"
+  password-mismatch: "<red>✗ Passwords do not match.</red>"
+  password-too-short: "<red>✗ Password must be at least {min} characters long.</red>"
+  password-too-long: "<red>✗ Password must not exceed {max} characters.</red>"
+  cooldown: "<yellow>⏳ Please wait {seconds}s before registering again.</yellow>"
+  rate-limited: "<red>✗ Too many registration attempts. Try again later.</red>"
+
+# Login
+login:
+  usage: "<red>Usage: /login <password></red>"
+  success: "<green>✓ Successfully logged in!</green>"
+  not-registered: "<red>✗ You are not registered. Use /register.</red>"
+  already-logged-in: "<red>✗ You are already logged in.</red>"
+  wrong-password: "<red>✗ Wrong password. {attempts} attempts remaining.</red>"
+  banned: "<red>✗ Too many failed attempts. You are banned for {minutes} minutes.</red>"
+  cooldown: "<yellow>⏳ Please wait {seconds}s before trying again.</yellow>"
+  rate-limited: "<red>✗ Too many login attempts. Try again later.</red>"
+  timeout: "<red>✗ Login timeout. You have been kicked.</red>"
+  session-restored: "<green>✓ Session restored. Welcome back, {player}!</green>"
+  require-auth: "<yellow>⚠ Please log in: /login <password></yellow>"
+  require-register: "<yellow>⚠ Please register: /register <password> <password></yellow>"
+  require-2fa: "<yellow>🔑 Enter your 2FA code: /2fa <code></yellow>"
+
+# Logout
+logout:
+  success: "<green>✓ Successfully logged out.</green>"
+  not-logged-in: "<red>✗ You are not logged in.</red>"
+
+session:
+  none: "<yellow>You have no trusted session on file — you'll need /login every time you connect.</yellow>"
+  status-active: "<green>✓ Active trusted session from {ip}, created {created}, expires {expires}.</green>"
+  status-expired: "<yellow>Your last trusted session (from {ip}) expired at {expires}. You'll need /login.</yellow>"
+  revoke-success: "<green>✓ Trusted session revoked. Future connections will require /login again.</green>"
+  revoke-none: "<yellow>There was no trusted session to revoke.</yellow>"
+
+# Change password
+changepassword:
+  usage: "<red>Usage: /changepassword <old-password> <new-password></red>"
+  success: "<green>✓ Password changed successfully.</green>"
+  wrong-old: "<red>✗ Wrong current password.</red>"
+  same-password: "<red>✗ New password must differ from the current one.</red>"
+  not-logged-in: "<red>✗ You must be logged in to change your password.</red>"
+
+# Two-Factor Authentication
+twofa:
+  usage: "<red>Usage: /2fa <code|enable|disable|backup></red>"
+  required-reminder: "<yellow>⚠ Your role requires two-factor authentication. Please set it up now with /2fa enable.</yellow>"
+  enable:
+    start: |
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      <white>Step 1: Open this link in your browser and scan the QR code:
+      <aqua><click:open_url:'{qr-url}'><u>🔗 Open QR code</u></click>
+      <white>Or enter this secret manually in Google Authenticator:
+      <green>{secret}
+      <white>Step 2: Confirm with: <aqua>/2fa enable <code>
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    start-manual: |
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+      <white>Step 1: Enter this secret manually in Google Authenticator (or any TOTP app):
+      <green>{secret}
+      <white>Step 2: Confirm with: <aqua>/2fa enable <code>
+      <aqua>━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    confirm-usage: "<red>Usage: /2fa enable <6-digit-code></red>"
+    success: |
+      <green>✓ 2FA enabled successfully!
+      <white>Backup codes (save these!):
+      {backup-codes}
+    already-enabled: "<red>✗ 2FA is already enabled.</red>"
+    invalid-code: "<red>✗ Invalid 2FA code. Please try again.</red>"
+  disable:
+    confirm-usage: "<red>Usage: /2fa disable <6-digit-code></red>"
+    success: "<green>✓ 2FA disabled.</green>"
+    not-enabled: "<red>✗ 2FA is not enabled.</red>"
+    invalid-code: "<red>✗ Invalid 2FA code.</red>"
+  verify:
+    invalid-code: "<red>✗ Invalid 2FA code. {attempts} attempts remaining.</red>"
+    success: "<green>✓ 2FA verified. You are now logged in.</green>"
+    rate-limited: "<red>✗ Too many 2FA attempts. Please wait.</red>"
+  backup:
+    list: |
+      <aqua>━━━ Backup Codes ━━━
+      {codes}
+      <gray>(Used codes are marked with ✗)
+    regenerated: "<green>✓ New backup codes generated. Old codes are now invalid.</green>"
+
+# Password Recovery
+recovery:
+  usage: "<red>Usage: /recover</red>"
+  sent: "<green>✓ Recovery email sent to {email}. Use /recover confirm <token> <newpassword> to finish.</green>"
+  failed: "<red>✗ Failed to send recovery email. Check SMTP settings or try again later.</red>"
+  not-found: "<red>✗ No account found with that email.</red>"
+  email-not-set: "<red>✗ No email address linked to your account.</red>"
+  no-email-linked: "<red>✗ No recovery email is linked to your account. Ask a staff member for help, or link one with /setemail <email> the next time you're logged in.</red>"
+  cooldown: "<yellow>⏳ Recovery email already sent. Check your inbox or wait {seconds}s.</yellow>"
+  disabled: "<red>✗ Email recovery is disabled on this server.</red>"
+  confirm-usage: "<red>Usage: /recover confirm <token> <newpassword></red>"
+  confirm-success: "<green>✓ Password reset successfully! All active sessions have been logged out — use /login with your new password.</green>"
+  invalid-token: "<red>✗ Invalid or expired recovery token. Request a new one with /recover.</red>"
+  rate-limited: "<red>✗ Too many recovery attempts. Please wait before trying again.</red>"
+
+setemail:
+  usage: "<red>Usage: /setemail <email></red>"
+  confirm-usage: "<red>Usage: /setemail confirm <token></red>"
+  invalid-format: "<red>✗ That doesn't look like a valid email address.</red>"
+  sent: "<green>✓ Verification email sent to {email}. Use /setemail confirm <token> to link it.</green>"
+  confirm-success: "<green>✓ Recovery email confirmed and linked to your account.</green>"
+  invalid-token: "<red>✗ Invalid or expired verification token. Request a new one with /setemail <email>.</red>"
+
+# Admin commands
+admin:
+  twofa-status:
+    not-configured: "<yellow>two-factor.require-for-permission is not set in config.yml — nothing to check.</yellow>"
+    none-online: "<yellow>No online player currently holds '{permission}'.</yellow>"
+    header: "<aqua>━━ 2FA compliance for '{permission}' ━━</aqua>"
+    compliant: "<green>✓ Has 2FA ({count}): {names}</green>"
+    missing: "<red>✗ Missing 2FA ({count}): {names}</red>"
+  reload:
+    start: "<yellow>⟳ Reloading SecureAuth...</yellow>"
+    module-ok: "<green>  ✓ {module} reloaded ({ms}ms)</green>"
+    module-failed: "<red>  ✗ {module} failed: {error}</red>"
+    done: "<green>✓ SecureAuth reloaded in {total-ms}ms.</green>"
+  forcelogin:
+    usage: "<red>Usage: /saadmin forcelogin <player></red>"
+    success: "<green>✓ Force-logged in {player}.</green>"
+    not-found: "<red>✗ Player not found: {player}.</red>"
+  resetpassword:
+    usage: "<red>Usage: /saadmin resetpassword <player> <new-password></red>"
+    success: "<green>✓ Password reset for {player}.</green>"
+    not-found: "<red>✗ Player not found: {player}.</red>"
+    notify: "<yellow>⚠ Your password has been reset by an administrator.</yellow>"
+  unban:
+    usage: "<red>Usage: /saadmin unban <ip></red>"
+    success: "<green>✓ IP {ip} has been unbanned.</green>"
+    not-banned: "<yellow>IP {ip} was not banned.</yellow>"
+  debug:
+    enabled: "<green>✓ Debug mode enabled.</green>"
+    disabled: "<yellow>✓ Debug mode disabled.</yellow>"
+  history:
+    usage: "<red>Usage: /saadmin history <player></red>"
+    not-found: "<red>✗ Player not found: {player}.</red>"
+    empty: "<yellow>No audit history found for {player}.</yellow>"
+    header: "<aqua>━━━ History: {player} (last {count} events) ━━━</aqua>"
+    entry: "<gray>{time}</gray> <white>{event}</white> <dark_gray>{ip}</dark_gray>{detail}"
+  stats:
+    header: "<aqua>━━━━━━━━ SecureAuth — Statistics ━━━━━━━━</aqua>"
+    players: "<white>👤 Players:        <green>{online}</green> online / <gray>{total}</gray> total"
+    sessions: "<white>🔑 Sessions:       <green>{active}</green> active"
+    bans: "<white>🔨 IP Bans:         <red>{active}</red> active"
+    fails: "<white>⚠️  Fails/hour:     <yellow>{count}</yellow>"
+    registrations: "<white>✅ Registrations/24h: <green>{count}</green>"
+  listbans:
+    header: "<aqua>━━━ Active IP Bans ({count}) ━━━</aqua>"
+    empty: "<yellow>No active IP bans.</yellow>"
+    entry: "<red>{ip}</red> <gray>—</gray> <white>{reason}</white> <gray>(until {expires})</gray>"
+  no-permission: "<red>✗ You don't have permission to do that.</red>"
+
+# GeoIP
+geoip:
+  blocked: "<red>✗ Connections from {country} are not allowed on this server.</red>"
+
+# AntiBot
+antibot:
+  connection-flood: "<red>✗ Too many connections from your IP. Please wait.</red>"
+  ip-blocked: "<red>✗ Your IP has been temporarily blocked due to suspicious activity.</red>"
+
+# General
+general:
+  player-only: "<red>✗ This command is for players only.</red>"
+  not-logged-in: "<red>✗ You must be logged in to use this.</red>"
+  error: "<red>✗ An error occurred. Please try again.</red>"
+  chat-command-redirected: "<yellow>⚠ That looked like a command missing its leading '/' — it was NOT sent to chat, and was run as a command instead. Always start commands with '/' to keep your password private.</yellow>"
+
+# Kick messages (shown on disconnect screen)
+kick:
+  login-timeout: "⏱ Login timeout.\nPlease reconnect and log in within {seconds} seconds."
+  banned: "🔒 Too many failed login attempts.\nYou are banned for {minutes} minutes."
+  ip-blocked: "🚫 Your IP has been blocked.\nPlease contact server administration."
+  geoip-blocked: "🌍 Connections from your country ({country}) are not allowed."
+  server-shutdown: "🔄 Server is restarting. Please reconnect shortly."
+update-checker:
+  available: "<gold>★ SecureAuth update available: <white>v{current}</white> → <green>v{latest}</green><gold>. Download: <aqua><click:open_url:'{url}'><u>{url}</u></click></aqua>"

@@ -39,7 +39,7 @@ dependencies {
     // 11.12.0 doesn't support SQLite 3.49+ (flyway/flyway#4157). Zero deps is better.
 
     implementation("org.xerial:sqlite-jdbc:3.51.2.0")                    // 3.49.1.0 → 3.51.2.0
-    implementation("com.mysql:mysql-connector-j:9.6.0") {                // 9.3.0 → 9.6.0
+    implementation("com.mysql:mysql-connector-j:26.7.0") {                // 9.3.0 → 26.7.0
         // Exclude X DevAPI protobuf dependency — we don't use it
         exclude(group = "com.google.protobuf", module = "protobuf-java")
     }
